@@ -95,8 +95,10 @@ Used to read the files
 """
 def readFile():
     global df
+    global df_pygal_country_codes
     #Read the data from the CSV file and store it into a dataframe
     df = pd.read_csv("HackerRank-Developer-Survey-2018-Values.csv")
+    df_pygal_country_codes = pd.read_csv("Pygal-Country-Codes.csv")
 
 """
 Used to plot the Age Information
@@ -211,6 +213,59 @@ def getTopEmployeeInterviewStyles():
     # criteriaDictionary = dict(criteriaSeries.value_counts())
 
     # print(str(criteriaSeries.info()))
+
+
+    """
+    What country are these hackers from?
+    """
+    def hackerCountryMap():
+
+        # map country to pygal country code
+
+        # get country responses from csv in list
+        country_responses = df["CountryNumeric2"]
+
+        # get count for each country code
+        hackers_per_country = dict(country_responses.value_counts())
+
+        # map country name to pygal country code
+        pygal_countries = pd.Series(df_pygal_country_codes.code.values, index=df_pygal_country_codes.Country).to_dict()
+
+        # make dict with key = pygal country code, value = number of hackers
+
+        range_0_100 = []
+        range_101_200 = []
+        range_201_300 = []
+        range_301_400 = []
+        range_401_500 = []
+        range_500_plus = []
+
+        for key in pygal_countries:
+            if key in hackers_per_country:
+                if hackers_per_country[key] > 500:
+                    range_500_plus.append(pygal_countries[key])
+                elif hackers_per_country[key] > 400:
+                    range_401_500.append(pygal_countries[key])
+                elif hackers_per_country[key] > 300:
+                    range_301_400.append(pygal_countries[key])
+                elif hackers_per_country[key] > 200:
+                    range_201_300.append(pygal_countries[key])
+                elif hackers_per_country[key] > 100:
+                    range_101_200.append(pygal_countries[key])
+                else:
+                    range_0_100.append(pygal_countries[key])
+
+        worldmap_chart = pygal.maps.world.World()
+        worldmap_chart.title = 'Some countries'
+        worldmap_chart.add('0 to 100 users', range_0_100)
+        worldmap_chart.add('101 to 200 users', range_101_200)
+        worldmap_chart.add('201 to 300 users', range_201_300)
+        worldmap_chart.add('301 to 400 users', range_301_400)
+        worldmap_chart.add('401 to 500 users', range_401_500)
+        worldmap_chart.add('More than 500 users', range_500_plus)
+        worldmap_chart.render_to_png()
+
+
 """
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INITIAL METHOD~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
