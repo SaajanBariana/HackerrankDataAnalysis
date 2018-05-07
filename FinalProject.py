@@ -40,7 +40,7 @@ def plotGraph(xAxisValues, yAxisValues, xLabel, yLabel, title, type, explode = N
         fig_size[0] = 10
         fig_size[1] = 8
         plt.rcParams["figure.figsize"] = fig_size
-        plt.pie(x=xAxisValues, labels=yAxisValues, autopct='%1.1f%%', explode=explode, pctdistance=pctdistance, radius= radius)
+        plt.pie(x=yAxisValues, labels=xAxisValues, autopct='%1.1f%%', explode=explode, pctdistance=pctdistance, radius= radius)
         if figsize != None:
             plt.figure(figsize=figsize)
         # fig = plt.gcf()
@@ -142,7 +142,7 @@ def getGender():
 
     print(str(genderDictionary))
 
-    plotGraph(genderDictionary.values(), genderDictionary.keys(), "", "", "Gender of HackerRank Users", "pie", (0, 0.05, 0.05))
+    plotGraph(genderDictionary.keys(), genderDictionary.values(), "", "", "Gender of HackerRank Users", "pie", (0, 0.05, 0.05))
 
 
 def getEducationLevel():
@@ -154,8 +154,63 @@ def getEducationLevel():
 
     print(str(educationDictionary))
 
-    plotGraph(educationDictionary.values(), educationDictionary.keys(), "", "", "Education Level of HackerRank Users", "pie", explode=(0.05, 0.05, 0.05, 0.05 ,0.05, 0.15, 0.2), radius=0.7, pctdistance=0.8)
+    plotGraph(educationDictionary.keys(), educationDictionary.values(), "", "", "Education Level of HackerRank Users", "pie", explode=(0.05, 0.05, 0.05, 0.05 ,0.05, 0.15, 0.2), radius=0.7, pctdistance=0.8)
 
+def getEmployeeJobCriteria():
+    criteriaDataframe = df[["q12JobCritPrefTechStack", "q12JobCritCompMission", "q12JobCritCompCulture", "q12JobCritWorkLifeBal", "q12JobCritCompensation", "q12JobCritProximity", "q12JobCritPerks", "q12JobCritSmartPeopleTeam", "q12JobCritImpactwithProduct", "q12JobCritInterestProblems", "q12JobCritFundingandValuation", "q12JobCritStability", "q12JobCritProfGrowth", "q12JobCritOther"]]
+
+    totalDictionary = {}
+
+    for i in criteriaDataframe:
+        eachSeries = df[i]
+        eachDict = dict(eachSeries.value_counts())
+        totalDictionary.update(eachDict)
+
+    del totalDictionary["#NULL!"]
+    sortedValues = sorted(totalDictionary.values(), reverse=True)
+    topFiveDictionary = {}
+
+    for i in range(0, 5):
+        for key in totalDictionary:
+            if totalDictionary[key] == sortedValues[i]:
+                topFiveDictionary[key] = totalDictionary[key]
+                del totalDictionary[key]
+                break
+
+    plotGraph(topFiveDictionary.keys(), topFiveDictionary.values(), "Five Criterias", "Total Number of Votes", "Employee Top Five Job Criterias", "bar")
+
+        # print(str(i))
+
+def getTopEmployeeInterviewStyles():
+    interviewDataframe = df[
+        ["q13EmpMeasWhiteboard", "q13EmpMeasHackerRank", "q13EmpMeasOtherCodingChallenge", "q13EmpMeasTechPhoneInt",
+         "q13EmpMeasTakeHomeProject", "q13EmpMeasResume", "q13EmpMeasPastWork", "q13EmpMeasOther"]]
+
+    totalDictionary = {}
+
+    for i in interviewDataframe:
+        totalDictionary.update(dict(df[i].value_counts()))
+
+    print(str(totalDictionary))
+
+    # sortedValues = sorted(totalDictionary.values(), reverse=True)
+    #
+    # topFiveDictionary = {}
+    #
+    # for i in range(0, 5):
+    #     for key in totalDictionary:
+    #         if totalDictionary[key] == sortedValues[i]:
+    #             topFiveDictionary[key] = totalDictionary[key]
+    #             del totalDictionary[key]
+    #             break
+
+    plotGraph(totalDictionary.keys(), totalDictionary.values(), "",
+              "", "Most Common Ways that Recruiters Measure Your Skills", "pie", explode=(0.01, 0.01, 0.01, 0.01 ,0.01, 0.01, 0.01, 0.01), radius=0.7, pctdistance=0.8)
+
+
+    # criteriaDictionary = dict(criteriaSeries.value_counts())
+
+    # print(str(criteriaSeries.info()))
 """
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~INITIAL METHOD~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
@@ -165,4 +220,6 @@ if __name__ == "__main__":
     # getAgeTheyStartedCoding()
     # getCurrentAge()
     # getGender()
-    getEducationLevel()
+    # getEducationLevel()
+    # getEmployeeJobCriteria()
+    getTopEmployeeInterviewStyles()
